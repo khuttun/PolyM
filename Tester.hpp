@@ -1,3 +1,6 @@
+#ifndef TESTER_HPP
+#define TESTER_HPP
+
 #include <cstdlib>
 #include <iostream>
 #include <functional>
@@ -110,3 +113,5 @@ private:
     std::string name_;
     std::vector<std::pair<std::function<void()>, std::string>> tests_;
 };
+
+#endif
