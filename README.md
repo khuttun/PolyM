@@ -1,12 +1,12 @@
 # PolyM
 
-PolyM is a very simple C++ message queue intended for inter-thread communication. There were three major requirement driving the design of PolyM:
+PolyM is a very simple C++ message queue intended for inter-thread communication. There are three major requirement driving the design of PolyM:
 
 - The design should be simple and lightweight
 - The design should support delivering any kind of data as the message payload
 - There should be no copies made of the message payload data when passing the message through the queue
 
-PolyM (**Poly**morphic **M**essage Queue) fulfills these requirements by extensive usage of C++ move semantics.
+PolyM (**Poly**morphic **M**essage Queue) fulfills these requirements by usage of C++ move semantics.
 
 ## Moving Messages Through the Queue
 
