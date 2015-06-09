@@ -114,6 +114,9 @@ void testDataMsg()
     auto& dm = dynamic_cast<PolyM::DataMsg<std::string>&>(*m);
     TEST_EQUALS(dm.getMsgId(), 42);
     TEST_EQUALS(dm.getPayload(), std::string("foo"));
+    // Test modifying the payload data
+    dm.getPayload() += "bar";
+    TEST_EQUALS(dm.getPayload(), std::string("foobar"));
 }
 
 // Test timeout when getting message from the queue

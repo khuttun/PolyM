@@ -94,7 +94,7 @@ public:
     }
 
     /** Get the payload data */
-    const PayloadType& getPayload() const
+    PayloadType& getPayload() const
     {
         return *pl_;
     }
