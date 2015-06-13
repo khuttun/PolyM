@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <condition_variable>
-#include <list>
+#include <queue>
 #include <map>
 #include <mutex>
 #include <utility>
@@ -21,7 +21,7 @@ public:
     {
         {
             std::lock_guard<std::mutex> lock(queueMutex_);
-            queue_.push_back(msg.move());
+            queue_.push(msg.move());
         }
 
         queueCond_.notify_one();
@@ -42,11 +42,11 @@ public:
                 [this]{return !queue_.empty();});
 
             if (timeoutOccured)
-                queue_.push_back(std::unique_ptr<Msg>(new Msg(MSG_TIMEOUT)));
+                queue_.emplace(new Msg(MSG_TIMEOUT));
         }
 
         auto msg = queue_.front()->move();
-        queue_.pop_front();
+        queue_.pop();
         return msg;
     }
 
@@ -77,7 +77,7 @@ public:
 
 private:
     // Queue for the Msgs
-    std::list<std::unique_ptr<Msg>> queue_;
+    std::queue<std::unique_ptr<Msg>> queue_;
 
     // Mutex to protect access to the queue
     std::mutex queueMutex_;
