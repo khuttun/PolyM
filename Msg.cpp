@@ -19,10 +19,6 @@ Msg::Msg(int msgId)
 {
 }
 
-Msg::~Msg()
-{
-}
-
 std::unique_ptr<Msg> Msg::move()
 {
     return std::unique_ptr<Msg>(new Msg(std::move(*this)));

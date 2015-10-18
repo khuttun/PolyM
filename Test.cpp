@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include <thread>
+#include <type_traits>
 #include <vector>
 
 // Test that MsgUIDs generated in two different threads simultaneously are unique
@@ -188,6 +189,12 @@ void testRequestResponse()
 
 int main()
 {
+    // Statically assert that messages can't be copied or moved
+    static_assert(!std::is_move_constructible<PolyM::Msg>::value, "Msg can't be copyable");
+    static_assert(!std::is_move_assignable<PolyM::Msg>::value, "Msg can't be copyable");
+    static_assert(!std::is_move_constructible<PolyM::DataMsg<int>>::value, "DataMsg can't be copyable");
+    static_assert(!std::is_move_assignable<PolyM::DataMsg<int>>::value, "DataMsg can't be copyable");
+
     Tester tester("Test PolyM");
     tester.addTest(testMsgUID, "Test MsgUID generation");
     tester.addTest(testMsgOrder, "Test 1-to-1 message order");

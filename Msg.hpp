@@ -7,7 +7,7 @@
 namespace PolyM {
 
 /** Type for Msg unique identifiers */
-typedef unsigned long long MsgUID;
+using MsgUID = unsigned long long;
 
 /**
  * Msg represents a simple message that doesn't have any payload data.
@@ -23,15 +23,9 @@ public:
      */
     Msg(int msgId);
 
-    /** Enable moving */
-    Msg(Msg&&) = default;
-    Msg& operator=(Msg&&) = default;
-
-    /** Disable copying */
+    virtual ~Msg() = default;
     Msg(const Msg&) = delete;
     Msg& operator=(const Msg&) = delete;
-
-    virtual ~Msg();
 
     /** "Virtual move constructor" */
     virtual std::unique_ptr<Msg> move();
@@ -49,6 +43,10 @@ public:
      * All Msg instances have a unique Msg UID.
      */
     MsgUID getUniqueId() const;
+
+protected:
+    Msg(Msg&&) = default;
+    Msg& operator=(Msg&&) = default;
 
 private:
     int msgId_;
@@ -75,17 +73,9 @@ public:
     {
     }
 
-    /** Enable moving */
-    DataMsg(DataMsg&&) = default;
-    DataMsg& operator=(DataMsg&&) = default;
-
-    /** Disable copying */
+    virtual ~DataMsg() = default;
     DataMsg(const DataMsg&) = delete;
     DataMsg& operator=(const DataMsg&) = delete;
-
-    virtual ~DataMsg()
-    {
-    }
 
     /** "Virtual move constructor" */
     virtual std::unique_ptr<Msg> move() override
@@ -98,6 +88,10 @@ public:
     {
         return *pl_;
     }
+
+protected:
+    DataMsg(DataMsg&&) = default;
+    DataMsg& operator=(DataMsg&&) = default;
 
 private:
     std::unique_ptr<PayloadType> pl_;
