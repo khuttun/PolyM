@@ -37,6 +37,9 @@ public:
      */
     std::unique_ptr<Msg> get(int timeoutMillis = 0);
 
+
+    size_t getQueueLen();
+
     /**
      * Make a request.
      * Call will block until response is given with respondTo().

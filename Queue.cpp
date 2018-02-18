@@ -75,6 +75,10 @@ public:
             responseMap_[reqUid]->put(std::move(responseMsg));
     }
 
+    size_t getQueueLen() {
+        return queue_.size();
+    }
+
 private:
     // Queue for the Msgs
     std::queue<std::unique_ptr<Msg>> queue_;
@@ -99,6 +103,10 @@ Queue::Queue()
 
 Queue::~Queue()
 {
+}
+
+size_t Queue::getQueueLen() {
+   return impl_->getQueueLen();
 }
 
 void Queue::put(Msg&& msg)
