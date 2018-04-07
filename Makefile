@@ -7,6 +7,7 @@ link_flags_shared_lib=-fPIC -shared
 
 default: bin
 
+all: bin polym.a poly.so
 
 bin: bin_objs
 	g++ -o test.exe *.o -lpthread
