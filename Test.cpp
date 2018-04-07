@@ -187,7 +187,11 @@ void testRequestResponse()
     t3.join();
 }
 
+#ifdef IS_LIB
+int main_test_polym()
+#else
 int main()
+#endif
 {
     // Statically assert that messages can't be copied or moved
     static_assert(!std::is_move_constructible<PolyM::Msg>::value, "Msg can't be copyable");
