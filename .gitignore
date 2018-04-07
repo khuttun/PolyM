@@ -1,3 +1,4 @@
 test.exe
 *.o
-polym.a
+*.so
+*.a
