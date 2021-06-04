@@ -45,8 +45,10 @@ public:
      * Call will block until response is given with respondTo().
      *
      * @param msg Request message. Is put to the queue so it can be retrieved from it with get().
+     * @param timeoutMillis How many ms to wait for response until timeout happens.
+     *                      0 = wait indefinitely.
      */
-    std::unique_ptr<Msg> request(Msg&& msg);
+    std::unique_ptr<Msg> request(Msg&& msg, int timeoutMillis = 0);
 
     /**
      * Respond to a request previously made with request().
