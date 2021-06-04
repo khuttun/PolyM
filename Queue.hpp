@@ -1,6 +1,4 @@
-#ifndef POLYM_QUEUE_HPP
-#define POLYM_QUEUE_HPP
-
+#pragma once
 #include "Msg.hpp"
 #include <memory>
 
@@ -67,5 +65,3 @@ private:
 };
 
 }
-
-#endif
