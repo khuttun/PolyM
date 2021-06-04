@@ -11,6 +11,14 @@ namespace PolyM {
 
 class Queue::Impl
 {
+    struct Request
+    {
+        Request() {};
+        
+        std::unique_ptr<Msg> response;
+        std::condition_variable condVar;
+    };
+
 public:
     Impl()
       : queue_(), queueMutex_(), queueCond_(), responseMap_(), responseMapMutex_()
@@ -65,20 +73,37 @@ public:
         }
     }
 
-    std::unique_ptr<Msg> request(Msg&& msg)
+    std::unique_ptr<Msg> request(Msg&& msg, int timeoutMillis)
     {
-        // Construct an ad hoc Queue to handle response Msg
+        Request req;
+
+        // emplace the request in the map
         std::unique_lock<std::mutex> lock(responseMapMutex_);
         auto it = responseMap_.emplace(
-            std::make_pair(msg.getUniqueId(), std::unique_ptr<Queue>(new Queue))).first;
-        lock.unlock();
+            std::make_pair(msg.getUniqueId(), &req)).first;
 
         put(std::move(msg));
-        auto response = it->second->get(); // Block until response is put to the response Queue
 
-        lock.lock();
-        responseMap_.erase(it); // Delete the response Queue
-        lock.unlock();
+        if (timeoutMillis <= 0)
+            req.condVar.wait(lock, [&req]{return req.response.get();});
+        else
+        {
+            // wait_for returns false if the return is due to timeout
+            auto timeoutOccured = !req.condVar.wait_for(
+                lock,
+                std::chrono::milliseconds(timeoutMillis),
+                [&req] {return req.response.get();}
+            );
+
+            if (timeoutOccured)
+            {
+                responseMap_.erase(it);
+                return nullptr;
+            }
+        }
+
+        auto response = std::move(it->second->response);
+        responseMap_.erase(it);
 
         return response;
     }
@@ -86,8 +111,12 @@ public:
     void respondTo(MsgUID reqUid, Msg&& responseMsg)
     {
         std::lock_guard<std::mutex> lock(responseMapMutex_);
-        if (responseMap_.count(reqUid) > 0)
-            responseMap_[reqUid]->put(std::move(responseMsg));
+        auto it = responseMap_.find(reqUid);
+        if(it == responseMap_.end())
+            return;
+
+        it->second->response = responseMsg.move();
+        it->second->condVar.notify_one();
     }
 
 private:
@@ -100,8 +129,8 @@ private:
     // Condition variable to wait for when getting Msgs from the queue
     std::condition_variable queueCond_;
 
-    // Map to keep track of which response handler queues are associated with which request Msgs
-    std::map<MsgUID, std::unique_ptr<Queue>> responseMap_;
+    // Map to keep track of which request IDs are associated with which request Msgs
+    std::map<MsgUID, Request*> responseMap_;
 
     // Mutex to protect access to response map
     std::mutex responseMapMutex_;
@@ -131,9 +160,9 @@ std::unique_ptr<Msg> Queue::tryGet()
     return impl_->tryGet();
 }
 
-std::unique_ptr<Msg> Queue::request(Msg&& msg)
+std::unique_ptr<Msg> Queue::request(Msg&& msg, int timeoutMillis)
 {
-    return impl_->request(std::move(msg));
+    return impl_->request(std::move(msg), timeoutMillis);
 }
 
 void Queue::respondTo(MsgUID reqUid, Msg&& responseMsg)

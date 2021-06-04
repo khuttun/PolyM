@@ -201,6 +201,16 @@ void testRequestResponse()
     t3.join();
 }
 
+void testRequestExpired()
+{
+    PolyM::Queue queue;
+    auto m1 = queue.request(PolyM::Msg(42), 50);
+    TEST_EQUALS(m1.get(), (PolyM::Msg*) nullptr);
+
+    auto m2 = queue.get();
+    TEST_EQUALS(m2->getMsgId(), 42);
+}
+
 int main()
 {
     // Statically assert that messages can't be copied or moved
@@ -217,5 +227,6 @@ int main()
     tester.addTest(testReceiveTimeout, "Test receive timeout");
     tester.addTest(testTryGet, "Test tryGet");
     tester.addTest(testRequestResponse, "Test 2-to-1 request-response");
+    tester.addTest(testRequestExpired, "Test request() timeout");
     tester.runTests();
 }
