@@ -42,12 +42,27 @@ public:
                 [this]{return !queue_.empty();});
 
             if (timeoutOccured)
-                queue_.emplace(new Msg(MSG_TIMEOUT));
+                return nullptr;
         }
 
         auto msg = queue_.front()->move();
         queue_.pop();
         return msg;
+    }
+
+    std::unique_ptr<Msg> tryGet()
+    {
+        std::unique_lock<std::mutex> lock(queueMutex_);
+        if (!queue_.empty())
+        {
+            auto msg = queue_.front()->move();
+            queue_.pop();
+            return msg;
+        }
+        else
+        {
+            return{ nullptr };
+        }
     }
 
     std::unique_ptr<Msg> request(Msg&& msg)
@@ -109,6 +124,11 @@ void Queue::put(Msg&& msg)
 std::unique_ptr<Msg> Queue::get(int timeoutMillis)
 {
     return impl_->get(timeoutMillis);
+}
+
+std::unique_ptr<Msg> Queue::tryGet()
+{
+    return impl_->tryGet();
 }
 
 std::unique_ptr<Msg> Queue::request(Msg&& msg)

@@ -142,9 +142,23 @@ void testReceiveTimeout()
     end = std::chrono::steady_clock::now();
     dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    TEST_EQUALS(m2->getMsgId(), PolyM::MSG_TIMEOUT);
+    TEST_EQUALS(m2.get(), (PolyM::Msg*) nullptr);
     //TEST_LESS_THAN(5LL, dur);
     //TEST_LESS_THAN(dur, 15LL);
+}
+
+// Test tryGet() method
+void testTryGet()
+{
+    PolyM::Queue q;
+
+    auto m1 = q.tryGet();
+    TEST_EQUALS(m1.get(), (PolyM::Msg*) nullptr);
+
+    q.put(PolyM::Msg(1));
+
+    auto m2 = q.tryGet();
+    TEST_NOT_EQUALS(m2.get(), (PolyM::Msg*) nullptr);
 }
 
 // Test 2-to-1 request-response scenario
@@ -201,6 +215,7 @@ int main()
     tester.addTest(test2To1MsgOrder, "Test 2-to-1 message order");
     tester.addTest(testDataMsg, "Test DataMsg");
     tester.addTest(testReceiveTimeout, "Test receive timeout");
+    tester.addTest(testTryGet, "Test tryGet");
     tester.addTest(testRequestResponse, "Test 2-to-1 request-response");
     tester.runTests();
 }
