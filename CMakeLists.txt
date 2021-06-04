@@ -1,5 +1,13 @@
+cmake_minimum_required(VERSION 3.8)
+
 project(PolyM)
-set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall -Wextra -Weffc++ -O3")
+
 add_library(polym Msg.cpp Queue.cpp)
+target_compile_features(polym PUBLIC cxx_std_11)
+
+find_package (Threads)
+target_link_libraries (polym PUBLIC Threads::Threads)
+
+# Test program
 add_executable(testpolym Test.cpp)
 target_link_libraries(testpolym polym)
