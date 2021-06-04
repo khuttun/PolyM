@@ -6,9 +6,6 @@
 
 namespace PolyM {
 
-/** Msg ID for timeout message */
-const int MSG_TIMEOUT = -1;
-
 /**
  * Queue is a thread-safe message queue.
  * It supports one-way messaging and request-response pattern.
@@ -36,6 +33,12 @@ public:
      *                      0 = wait indefinitely.
      */
     std::unique_ptr<Msg> get(int timeoutMillis = 0);
+
+    /**
+    * Get message from the head of the queue. Returns an empty pointer if no 
+    * message is available.
+    */
+    std::unique_ptr<Msg> tryGet();
 
     /**
      * Make a request.
