@@ -1,6 +1,4 @@
-#ifndef POLYM_MSG_HPP
-#define POLYM_MSG_HPP
-
+#pragma once
 #include <memory>
 #include <utility>
 
@@ -98,5 +96,3 @@ private:
 };
 
 }
-
-#endif
