@@ -14,5 +14,7 @@ find_package (Threads)
 target_link_libraries (polym PUBLIC Threads::Threads)
 
 # Test program
+enable_testing()
 add_executable(testpolym Test.cpp)
 target_link_libraries(testpolym polym)
+add_test(NAME PolyM COMMAND testpolym)
