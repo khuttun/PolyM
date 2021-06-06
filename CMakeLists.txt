@@ -10,9 +10,6 @@ add_library(polym
 
 target_compile_features(polym PUBLIC cxx_std_11)
 
-find_package (Threads)
-target_link_libraries (polym PUBLIC Threads::Threads)
-
 # Test program
 enable_testing()
 add_executable(testpolym Test.cpp)
