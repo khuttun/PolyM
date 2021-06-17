@@ -108,15 +108,16 @@ public:
         return response;
     }
 
-    void respondTo(MsgUID reqUid, Msg&& responseMsg)
+    bool respondTo(MsgUID reqUid, Msg&& responseMsg)
     {
-        std::lock_guard<std::mutex> lock(responseMapMutex_);
+        std::unique_lock<std::mutex> lock(responseMapMutex_);
         auto it = responseMap_.find(reqUid);
         if(it == responseMap_.end())
-            return;
+            return false;
 
         it->second->response = responseMsg.move();
         it->second->condVar.notify_one();
+        return true;
     }
 
 private:
@@ -165,9 +166,9 @@ std::unique_ptr<Msg> Queue::request(Msg&& msg, int timeoutMillis)
     return impl_->request(std::move(msg), timeoutMillis);
 }
 
-void Queue::respondTo(MsgUID reqUid, Msg&& responseMsg)
+bool Queue::respondTo(MsgUID reqUid, Msg&& responseMsg)
 {
-    impl_->respondTo(reqUid, std::move(responseMsg));
+    return impl_->respondTo(reqUid, std::move(responseMsg));
 }
 
 }

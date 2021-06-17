@@ -52,12 +52,13 @@ public:
 
     /**
      * Respond to a request previously made with request().
-     *
+     * If the requestID has been found, return true.
+     * 
      * @param reqUid Msg UID of the request message.
      * @param responseMsg Response message. The requester will receive it as the return value of
      *                    request().
      */
-    void respondTo(MsgUID reqUid, Msg&& responseMsg);
+    bool respondTo(MsgUID reqUid, Msg&& responseMsg);
 
 private:
     class Impl;
