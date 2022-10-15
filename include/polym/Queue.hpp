@@ -59,6 +59,10 @@ public:
      */
     bool respondTo(MsgUID reqUid, Msg&& responseMsg);
 
+    /**
+     * Get the size of the queue
+    */
+    size_t size();
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;
