@@ -120,6 +120,13 @@ public:
         return true;
     }
 
+    size_t size()
+    {
+        std::unique_lock<std::mutex> lock(queueMutex_);
+        auto size = queue_.size();
+        return size;
+    }
+
 private:
     // Queue for the Msgs
     std::queue<std::unique_ptr<Msg>> queue_;
@@ -169,6 +176,11 @@ std::unique_ptr<Msg> Queue::request(Msg&& msg, int timeoutMillis)
 bool Queue::respondTo(MsgUID reqUid, Msg&& responseMsg)
 {
     return impl_->respondTo(reqUid, std::move(responseMsg));
+}
+
+size_t Queue::size()
+{
+    return impl_->size();
 }
 
 }
