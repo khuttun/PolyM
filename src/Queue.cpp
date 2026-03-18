@@ -60,7 +60,7 @@ public:
 
     std::unique_ptr<Msg> tryGet()
     {
-        std::unique_lock<std::mutex> lock(queueMutex_);
+        std::lock_guard<std::mutex> lock(queueMutex_);
         if (!queue_.empty())
         {
             auto msg = queue_.front()->move();

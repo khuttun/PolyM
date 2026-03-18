@@ -1,0 +1,33 @@
+name: documentation
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: doxygen doxygen-doc doxygen-gui doxygen-latex graphviz mscgen python3-breathe python3-sphinx python3-sphinx-rtd-theme
+          version: 1.0
+
+      - name: Configure CMake
+        run: |
+          # In fact, POLYM_BUILD_DOCS is on by default
+          cmake -B ${{github.workspace}}/build -DPOLYM_BUILD_DOCS=ON
+      - name: Sphinx build
+        run: |
+          cmake --build build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/document' }}
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{github.workspace}}/build/docs/sphinx
+          force_orphan: true

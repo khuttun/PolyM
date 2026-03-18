@@ -1,0 +1,8 @@
+.vscode
+build
+_build
+cmake-debug-build
+docs/build
+
+# Documentation toolchain
+sphinx_*/
